@@ -2,7 +2,7 @@
 
 consul-template-init-script:
   file.managed:
-    {% if salt['test.provider']('service') == 'systemd' %}
+    {% if salt['test.provider']('service').startswith('systemd') %}
     - source: salt://consul-template/files/consul-template.service
     - name: /etc/systemd/system/consul-template.service
     - mode: 0644
@@ -20,6 +20,7 @@ consul-template-init-script:
 consul-template-service:
   service.running:
     - name: consul-template
+    - enable: True
     - watch:
       - file: /etc/consul-template.d/*
 {% endif %}

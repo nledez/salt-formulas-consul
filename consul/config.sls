@@ -3,8 +3,9 @@
 consul-config:
   file.serialize:
     - name: /etc/consul.d/config.json
+    - encoding: utf-8
     - formatter: json
-    - dataset: {{ consul.config }}
+    - dataset: {{ consul.config | json }}
     - user: {{ consul.user }}
     - group: {{ consul.group }}
     - mode: 0640
@@ -40,4 +41,4 @@ consul-script-config:
       - user: consul-user
     - formatter: json
     - dataset:
-        services: {{ consul.register }}
+        services: {{ consul.register | json }}
