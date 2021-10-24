@@ -9,7 +9,7 @@ ConditionFileNotEmpty=/etc/consul.d/config.json
 User={{ user }}
 Group={{ group }}
 ExecStart=/usr/local/bin/consul agent -config-dir=/etc/consul.d
-ExecReload=/usr/local/bin/consul reload
+ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
 RestartSec=42s
