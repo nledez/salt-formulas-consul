@@ -17,8 +17,10 @@ consul-init-env:
     - contents:
       - CONSUL_USER={{ consul.user }}
       - CONSUL_GROUP={{ consul.group }}
+{%- if consul.service %}
     - watch_in:
       - service: consul-service
+{%- endif %}
 
 consul-init-file:
   file.managed:
@@ -39,5 +41,7 @@ consul-init-file:
     - name: /etc/init.d/consul
     - mode: 0755
     {%- endif %}
+{%- if consul.service %}
     - watch_in:
       - service: consul-service
+{%- endif %}
