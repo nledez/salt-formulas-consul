@@ -80,60 +80,25 @@ consul-install:
     - target: /opt/consul/v{{ consul.version }}/consul
     - force: true
 {% elif consul.packaging == "debian" %}
+include:
+  - hashicorp.apt
+
 /opt/consul/:
   file.absent: []
 
 /usr/local/bin/consul:
   file.absent: []
 
-/usr/share/keyrings/hashicorp-archive-keyring.gpg:
-    file.managed:
-    - source: salt://{{ slspath }}/files/hashicorp-archive-keyring.gpg
-    - user: root
-    - group: root
-    - mode: 644
-    - template: jinja
-
-/etc/apt/sources.list.d/hashicorp.list:
-  file.managed:
-    - contents: "deb [arch=amd64 signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] {{ consul.debian_mirror }} {{ grains['lsb_distrib_codename'] | lower }} main"
-    - require:
-      - file: /usr/share/keyrings/hashicorp-archive-keyring.gpg
-    - onchanges_in:
-      - cmd: hashicorp_apt_update
-
-hashicorp_apt_update:
-  cmd.run:
-    - name: apt-get -q=9 update
-    - stateful: False
-
 consul-package:
   {{ pkg_install_or_latest }}:
-    - pkgs:
-      - consul={{ consul.version }}
+    - name: consul
+    - version: {{ consul.version }}
+    - require:
+      - file: /etc/apt/sources.list.d/hashicorp.list
+      - cmd: hashicorp_apt_update
 
 /etc/consul.d/consul.hcl:
-  file.absent: []
+  file.absent:
+    - require:
+      - pkg: consul-package
 {% endif %}
-
-# consul-install:
-#   file.rename:
-#     - name: /usr/local/bin/consul-{{ consul.version }}
-#     - source: /opt/consul/consul
-#     - require:
-#       - file: /usr/local/bin
-#     - watch:
-#       - cmd: consul-extract
-
-# consul-clean:
-#   file.absent:
-#     - name: /opt/consul/consul_{{ consul.version }}_linux_{{ consul.arch }}.zip
-#     - watch:
-#       - file: consul-install
-
-# consul-link:
-#   file.symlink:
-#     - target: consul-{{ consul.version }}
-#     - name: /usr/local/bin/consul
-#     - watch:
-#       - file: consul-install
