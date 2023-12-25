@@ -1,8 +1,10 @@
 consul:
   version: 1.3.0
+  packaging: zip
   download_host: releases.hashicorp.com
+  debian_mirror: https://apt.releases.hashicorp.com
 
-  service: false
+  service: true
 
   user: consul
   user_uid:

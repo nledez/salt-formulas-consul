@@ -1,5 +1,13 @@
 {%- from slspath+"/map.jinja" import consul with context -%}
 
+{% if consul.packaging == "zip" %}
+{% set consul_path = "/usr/local/bin/consul" %}
+{% elif consul.packaging == "debian" %}
+{% set consul_path = "/usr/bin/consul" %}
+{% else %}
+{% set consul_path = "/usr/local/bin/consul" %}
+{% endif %}
+
 include:
   - {{ slspath }}.service
 
@@ -31,6 +39,7 @@ consul-init-file:
     - context:
         user: {{ consul.user }}
         group: {{ consul.group }}
+        consul_path: {{ consul_path }}
     - mode: 0644
     {%- elif salt['test.provider']('service') == 'upstart' %}
     - source: salt://{{ slspath }}/files/consul.upstart
