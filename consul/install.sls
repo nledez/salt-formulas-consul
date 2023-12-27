@@ -7,6 +7,7 @@
   {%- set pkg_install_or_latest = 'pkg.installed' %}
 {%- endif %}
 
+{% if consul.packaging == "zip" %}
 consul-dep-unzip:
   pkg.installed:
     - name: unzip
@@ -15,6 +16,7 @@ consul-bin-dir:
   file.directory:
     - name: /usr/local/bin
     - makedirs: True
+{% endif %}
 
 # Create consul user
 consul-group:
