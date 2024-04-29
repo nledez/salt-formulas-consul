@@ -83,7 +83,7 @@ consul-install:
     - force: true
 {% elif consul.packaging == "debian" %}
 include:
-  - hashicorp.apt
+  - apt.repos.hashicorp
 
 /opt/consul/:
   file.absent: []
@@ -97,7 +97,7 @@ consul-package:
     - version: {{ consul.version }}
     - require:
       - file: /etc/apt/sources.list.d/hashicorp.list
-      - cmd: hashicorp_apt_update
+      - cmd: apt_update
 
 /etc/consul.d/consul.hcl:
   file.absent:
